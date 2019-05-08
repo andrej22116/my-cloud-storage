@@ -18,12 +18,7 @@ var FILESYSTEM_COMPONENT = {
     `,
     data: function() {
         return {
-            filesList: [
-                { id: 0, name: 'file_1', date: '1.1.2019', isFolder: true },
-                { id: 1, name: 'file_2', date: '2.2.2019', isFolder: false },
-                { id: 2, name: 'file_3', date: '3.3.2019', isFolder: true },
-                { id: 3, name: 'file_4', date: '4.4.2019', isFolder: false },
-            ],
+            filesList: [],
         }
     },
     methods: {

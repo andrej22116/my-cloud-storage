@@ -1,44 +1,56 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"fmt"
 
 	"./controllers"
+	"./controllers/database"
 )
 
 func main() {
-	//app := iris.Default()
+
+	err := controllers.OpenDatabaseConnection()
+	if err != nil {
+		panic(err)
+	}
+
+	userData, err := database.Authorization(db, database.UserArguments{
+		Login:    "admin",
+		Password: "admin",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(userData.AccessToken)
+
 	/*
-		app.Get("/ping", func(context iris.Context) {
-			context.JSON(iris.Map{
-				"message": "Pong!",
-			})
-		})
-	*/
-	//app.Get("/ping", new(controllers.TestController))
+		var user database.UserData
+		user.Nickname = "admin"
 
-	//app.Use(recover.New())
+		var newFile database.FileInfo
+		newFile.Name = "test.txt"
+		newFile.IsFolder = false
+		err = database.CreateFile(db, user, "/admin", newFile)
+		if err != nil {
+			panic(err)
+		}*/
 
-	/*
-		app.RegisterView(iris.HTML("./views", ".html"))
+	files, err := database.GetUserRoot(db, userData)
+	if err != nil {
+		panic(err)
+	}
 
-		appMvc := mvc.New(app)
+	fmt.Println("Lol")
+	for _, file := range files {
+		fmt.Println(file.Name)
+	}
 
-		appMvc.Handle(new(controllers.IndexController))
-		appMvc.Handle(new(controllers.HelpController))
-		appMvc.Handle(new(controllers.FileUploadController))
-		appMvc.Handle(new(controllers.FileSendController))
+	//router := mux.NewRouter()
 
-		app.Run(iris.Addr(":8080"))
-	*/
+	///router.HandleFunc("/load", controllers.SendFile)
+	//router.HandleFunc("/load", controllers.SendPrivateFile).Methods("POST")
+	//router.HandleFunc("/files", controllers.GetAllFiles).Methods("GET")
 
-	router := mux.NewRouter()
-
-	//router.HandleFunc("/load", controllers.SendFile)
-	router.HandleFunc("/load", controllers.SendPrivateFile).Methods("POST")
-	router.HandleFunc("/files", controllers.GetAllFiles).Methods("GET")
-
-	http.ListenAndServe(":8080", router)
+	//http.ListenAndServe(":8080", router)
 }
