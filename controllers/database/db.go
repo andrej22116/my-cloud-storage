@@ -11,14 +11,14 @@ type Config struct {
 }
 
 type UserArguments struct {
-	Login    string
-	Password string
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
 type UserData struct {
-	AccessToken string
-	Nickname    string
-	Status      int8
+	AccessToken string `json:"token"`
+	Nickname    string `json:"nickname"`
+	Status      int8   `json:"status"`
 }
 
 func NewDatabase(config *Config) (*sql.DB, error) {

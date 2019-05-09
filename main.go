@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 
 	"./controllers"
-	"./controllers/database"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -13,16 +13,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	userData, err := database.Authorization(db, database.UserArguments{
-		Login:    "admin",
-		Password: "admin",
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(userData.AccessToken)
 
 	/*
 		var user database.UserData
@@ -36,21 +26,16 @@ func main() {
 			panic(err)
 		}*/
 
-	files, err := database.GetUserRoot(db, userData)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Lol")
-	for _, file := range files {
-		fmt.Println(file.Name)
-	}
-
-	//router := mux.NewRouter()
+	router := mux.NewRouter()
 
 	///router.HandleFunc("/load", controllers.SendFile)
 	//router.HandleFunc("/load", controllers.SendPrivateFile).Methods("POST")
-	//router.HandleFunc("/files", controllers.GetAllFiles).Methods("GET")
+	router.HandleFunc("/upload", controllers.UploadFileHandler).Methods("POST")
+	router.HandleFunc("/files", controllers.GetAllFiles).Methods("GET")
+	router.HandleFunc("/registration", controllers.RegistrationHandler).Methods("POST")
+	router.HandleFunc("/authorization", controllers.AuthorizationHandler).Methods("POST")
+	router.HandleFunc("/logout", controllers.LogoutHandler).Methods("POST")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./views/")))
 
-	//http.ListenAndServe(":8080", router)
+	http.ListenAndServe(":8080", router)
 }

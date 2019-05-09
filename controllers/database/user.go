@@ -11,8 +11,9 @@ const (
 	logoutUser          = "select from logout_user($1);"
 )
 
-func Registration(database *sql.DB, userArguments UserArguments) (UserData, error) {
-	return UserData{}, nil
+func Registration(database *sql.DB, userArguments UserArguments) error {
+	_, err := database.Exec(registrationNewUser, userArguments.Login, userArguments.Password)
+	return err
 }
 
 func Authorization(database *sql.DB, userArguments UserArguments) (UserData, error) {

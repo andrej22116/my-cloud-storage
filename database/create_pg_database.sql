@@ -2,7 +2,7 @@
 create extension pgcrypto;
 
 -- permisions
-drop table if exists permission_levels; 
+drop table if exists permission_levels cascade; 
 create table permission_levels (
 	lvl smallint primary key,
 	name varchar(32) unique not null
@@ -11,16 +11,16 @@ insert into permission_levels(lvl, name) values ( 0, 'user')
                                               , ( 999, 'admin');
 
 -- users
-drop table if exists users; 
+drop table if exists users cascade; 
 create table users (
 	nickname varchar(128) primary key,
 	password varchar(256) not null,
-	status smallint not null references permission_levels
+	status smallint not null references permission_levels default (0)
 );
 
 
 -- users sessions
-drop table if exists sessions; 
+drop table if exists sessions cascade; 
 create table sessions (
 	session_key text primary key default(gen_random_bytes(64)),
 	user_nickname varchar(128) not null references users,
@@ -28,7 +28,7 @@ create table sessions (
 );
 
 
-drop table if exists folders; 
+drop table if exists folders cascade; 
 create table folders (
 	id_uuid uuid primary key default(gen_random_uuid()),
 	owner_nickname varchar(128) not null references users,
@@ -36,7 +36,7 @@ create table folders (
 );
 
 
-drop table if exists files; 
+drop table if exists files cascade; 
 create table files(
 	name varchar(240) not null check ( length(name) > 0 
                                        and name not like '.'
@@ -317,3 +317,5 @@ as $body$
 	delete from sessions where user_nickname = nickname;
 $body$
 language sql;
+
+select from logout_user('\x0c2de4ad152dafe2434bb4e38a048a52eb0ee3b5c72ff0d8c27dd78bebd39983e03ec95ed58c08fe66c7e10e9335c394ffb85a3b3137b3221ada9a2332f14698');

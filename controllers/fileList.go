@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 )
@@ -27,10 +26,13 @@ func GetAllFiles(w http.ResponseWriter, r *http.Request) {
 		//
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET")
-	w.Header().Set("Access-Control-Allow-Headers", "application/json")
-	json.NewEncoder(w).Encode(files)
+	makeJsonHeader(w, "GET", files)
+	/*
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET")
+		w.Header().Set("Access-Control-Allow-Headers", "application/json")
+		json.NewEncoder(w).Encode(files)
+	*/
 }
