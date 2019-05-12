@@ -6,21 +6,23 @@ var FILESYSTEM_COMPONENT = {
     },
     template: `
         <div class="filesystem">
-            <div class="menu">{{path}}</div>
+            <div class="path">{{path}}</div>
             <button @click="update">Get files</button>
             <input v-model="newFolderName">
             <button @click="onCreateNewFolder">CreateFolder</button>
             <button @click="onGoParentFolder">back</button>
-            <file 
-                @on_next_folder="nextFolder"
-                @on_download_file="downloadFile"
-                @on_delete_file_obj="deleteFile"
-                v-for="(file, index) in filesList" 
-                :file="file"
-                :id="index"
-                :key="file.id"
-                >
-            </file>
+            <div class="filelist">
+                <file
+                    @on_next_folder="nextFolder"
+                    @on_download_file="downloadFile"
+                    @on_delete_file_obj="deleteFile"
+                    v-for="(file, index) in filesList" 
+                    :file="file"
+                    :id="index"
+                    :key="file.id"
+                    >
+                </file>
+            </div>
             <upload :upload-path="path"></upload>
         </div>
     `,
@@ -53,8 +55,21 @@ var FILESYSTEM_COMPONENT = {
                 });
         },
 
-        deleteFile: function( id ) {
-            this.filesList.splice(id, 1);
+        deleteFile: function( fileItem ) {
+            axios
+                .post('http://' + SERVER_ADDRES + '/remove', {
+                    token: window.localStorage["token"],
+                    path: this.path,
+                    name: fileItem.file.name,
+                })
+                .then( () => {
+                    this.filesList.splice(fileItem.id, 1);
+                    console.log('SUCCESS!!')
+                })
+                .catch( error => {
+                    console.log('FAILURE!!');
+                    console.log(error);
+                });
         },
 
         update: function() {
@@ -77,7 +92,7 @@ var FILESYSTEM_COMPONENT = {
                     path: this.path,
                     name: this.newFolderName
                 })
-                .then(response => console.log('SUCCESS!!'))
+                .then(() => console.log('SUCCESS!!'))
                 .catch(error => console.log(error));
         },
 

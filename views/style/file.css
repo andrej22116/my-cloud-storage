@@ -1,0 +1,27 @@
+.folder-item {
+    margin: 1em;
+    padding-top: 128px;
+
+    font-size: 12px;
+
+    width: 128px;
+    height: 128px + 2em;
+
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.file {
+    background-image: url(./img/file.png);
+}
+
+.folder {
+    background-image: url(./img/folder.png);
+}
+
+.options {
+    position: relative;
+    top: -128px - 2em;
+    left: 0;
+}

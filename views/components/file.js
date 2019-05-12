@@ -1,7 +1,7 @@
 var FILE_COMPONENT = {
     props: ['file', 'id'],
     template: `
-        <div @dblclick="onDblClick" v-bind:class="[ file.isFolder ? 'folder' : 'file' ]">
+        <div @dblclick="onDblClick" v-bind:class="[ file.isFolder ? 'folder' : 'file', 'folder-item' ]">
             <div class="icon"></div>
             <div class="name">
                 <div>{{ file.name }}</div>
@@ -25,7 +25,7 @@ var FILE_COMPONENT = {
         },
 
         onDelete: function() {
-            this.$emit( 'on_delete_file_obj', this.id );
+            this.$emit( 'on_delete_file_obj', this );
             // send msg to server.
         },
 
