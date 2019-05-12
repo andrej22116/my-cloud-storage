@@ -30,18 +30,17 @@ func (e FileNotExistsError) Error() string {
 }
 
 const (
-	getFolderContent   = "select * from get_folder_content($1);"
-	testFolderExists   = "select * from test_folder_exists($1);"
-	testFileExists     = "select * from test_file_exists($1, $2);"
-	createFileInFolder = "select * from create_file_in_folder($1, $2, $3);"
-	deleteFileInFolder = "select * from delete_file_in_folder($1, $2);"
+	getFolderContent            = "select * from get_folder_content($1);"
+	testFolderExists            = "select * from test_folder_exists($1);"
+	testFileExists              = "select * from test_file_exists($1, $2);"
+	createFileInFolder          = "select * from create_file_in_folder($1, $2, $3);"
+	deleteFileInFolder          = "select * from delete_file_in_folder($1, $2);"
+	createUploadTokenForSession = "select * from create_upload_token_for_session($1, $2, $3);"
+	dataForUploadToken          = "select * from data_for_upload_token($1);"
+	deleteUploadTokenForSession = "select * from delete_upload_token_for_session($1);"
 )
 
-func GetUserRoot(database *sql.DB, userData UserData) ([]FileInfo, error) {
-	return GetUserPath(database, userData, "/"+userData.Nickname)
-}
-
-func GetUserPath(database *sql.DB, userData UserData, path string) ([]FileInfo, error) {
+func GetFileListFromPath(database *sql.DB, path string) ([]FileInfo, error) {
 	rows, err := database.Query(getFolderContent, path)
 
 	if err != nil {
@@ -60,7 +59,7 @@ func GetUserPath(database *sql.DB, userData UserData, path string) ([]FileInfo, 
 	return result, nil
 }
 
-func CreateFile(database *sql.DB, userData UserData, path string, fileInfo FileInfo) error {
+func CreateFile(database *sql.DB, path string, fileInfo FileInfo) error {
 	err := checkFolderExists(database, path)
 	if err != nil {
 		return err
@@ -71,7 +70,7 @@ func CreateFile(database *sql.DB, userData UserData, path string, fileInfo FileI
 	return err
 }
 
-func ModifyFile(database *sql.DB, userData UserData, path string, oldFileInfo FileInfo, newFileInfo FileInfo) error {
+func ModifyFile(database *sql.DB, path string, oldFileInfo FileInfo, newFileInfo FileInfo) error {
 
 	/*
 		_, err = database.Exec(create_file_in_folder, path, fileInfo.Name, fileInfo.IsFolder)
@@ -81,7 +80,7 @@ func ModifyFile(database *sql.DB, userData UserData, path string, oldFileInfo Fi
 	return nil
 }
 
-func DeleteFile(database *sql.DB, userData UserData, path string, fileInfo FileInfo) error {
+func RemoveFile(database *sql.DB, path string, fileInfo FileInfo) error {
 	err := checkFileExists(database, path, fileInfo.Name)
 	if err != nil {
 		return err
@@ -130,4 +129,43 @@ func checkFileExists(database *sql.DB, path string, fileName string) error {
 	}
 
 	return nil
+}
+
+func CreateNewUploadToken(database *sql.DB, token, path, fileName string) (string, error) {
+	rows, err := database.Query(createUploadTokenForSession, token, path, fileName)
+	if err != nil {
+		return "", err
+	}
+
+	defer rows.Close()
+
+	uploadToken := ""
+
+	rows.Next()
+	rows.Scan(&uploadToken)
+
+	return uploadToken, nil
+}
+
+func DataByUploadToken(database *sql.DB, token string) (string, string, string, error) {
+	rows, err := database.Query(dataForUploadToken, token)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	defer rows.Close()
+
+	userToken := ""
+	filePath := ""
+	fileName := ""
+
+	rows.Next()
+	rows.Scan(&userToken, &filePath, &fileName)
+
+	return userToken, filePath, fileName, nil
+}
+
+func DeleteUploadToken(database *sql.DB, token string) error {
+	_, err := database.Exec(deleteUploadTokenForSession, token)
+	return err
 }

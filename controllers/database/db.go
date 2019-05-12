@@ -21,6 +21,10 @@ type UserData struct {
 	Status      int8   `json:"status"`
 }
 
+type Token struct {
+	Token string `json:"token"`
+}
+
 func NewDatabase(config *Config) (*sql.DB, error) {
 	connection, err := sql.Open("postgres", config.ConnectionString)
 

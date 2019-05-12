@@ -1,5 +1,5 @@
 var UPLOAD_COMPONENT = {
-    prop: ["upload"],
+    props: ["uploadPath"],
     template: `
         <div>
             <input type="file" id="file" ref="file" @change="change"/>
@@ -19,16 +19,26 @@ var UPLOAD_COMPONENT = {
         upload: function () {
             var formData = new FormData();
             formData.append('file', this.file);
-            formData.append('token', JSON.stringify(window.localStorage["token"]));
 
             axios
-                .post('http://' + SERVER_ADDRES + '/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                .post('http://' + SERVER_ADDRES + '/upload', {
+                    token: window.localStorage["token"],
+                    path: this.uploadPath,
+                    name: 'lol',
                 })
-                .then(function(){
-                    console.log('SUCCESS!!');
+                .then( response => {
+                    axios
+                        .post('http://' + SERVER_ADDRES + '/upload/' + response.data.uploadToken, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(function(){
+                            console.log('SUCCESS!!');
+                        })
+                        .catch(function(){
+                            console.log('FAILURE!!');
+                        })
                 })
                 .catch(function(){
                     console.log('FAILURE!!');

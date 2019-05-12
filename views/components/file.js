@@ -1,5 +1,5 @@
 var FILE_COMPONENT = {
-    props: ['file'],
+    props: ['file', 'id'],
     template: `
         <div @dblclick="onDblClick" v-bind:class="[ file.isFolder ? 'folder' : 'file' ]">
             <div class="icon"></div>
@@ -14,24 +14,31 @@ var FILE_COMPONENT = {
             </div>
         </div>
     `,
-    /*data: function () {
+    data: function () {
         return {
-            fileSize: 0,
+            index: 0,
         }
-    },*/
+    },
     methods: {
         onDblClick: function() {
             this.$emit( this.file.isFolder ? 'on_next_folder' : 'on_download_file', this.file.name );
         },
+
         onDelete: function() {
-            this.$emit( 'on_delete_file_obj', this.file.id );
+            this.$emit( 'on_delete_file_obj', this.id );
             // send msg to server.
         },
+
         onBeginEdit: function() {
 
         },
+
         onEndEdit: function() {
 
+        },
+
+        getID(index) {
+            this.index = index;
         }
     }
 };

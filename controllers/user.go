@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"./database"
+	"./filesystem"
 )
 
 func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
-
 	user := database.UserArguments{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -22,6 +22,8 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		makeErrorHeader(w, http.StatusBadRequest)
 	}
+
+	filesystem.CreateFolder(filesystem.RootPath, user.Login)
 }
 
 func AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,10 +44,8 @@ func AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	var token struct {
-		Token string `json:"token"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&token)
+	token := database.Token{}
+	err := jsonFromBody(r, &token)
 	if err != nil {
 		fmt.Println(err)
 		makeErrorHeader(w, http.StatusBadRequest)
