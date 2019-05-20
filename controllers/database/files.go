@@ -7,28 +7,46 @@ import (
 	_ "github.com/lib/pq"
 )
 
+/*
+FileInfo - структура с информацией о файле
+*/
 type FileInfo struct {
 	Name     string `json:"name"`
 	IsFolder bool   `json:"isFolder"`
 	Time     string `json:"date"`
 }
 
+/*
+FolderNotExistsError - структура ошибки отсутствия папки
+*/
 type FolderNotExistsError struct {
 	What string
 }
 
+/*
+FolderNotExistsError Error - реализация интерфейса ошибки
+*/
 func (e FolderNotExistsError) Error() string {
 	return fmt.Sprint(e.What)
 }
 
+/*
+FileNotExistsError - структура отсутствия файла
+*/
 type FileNotExistsError struct {
 	What string
 }
 
+/*
+FileNotExistsError Error - реализация интерфейса ошибки
+*/
 func (e FileNotExistsError) Error() string {
 	return fmt.Sprint(e.What)
 }
 
+/*
+Константы с запросами
+*/
 const (
 	getFolderContent            = "select * from get_folder_content($1);"
 	testFolderExists            = "select * from test_folder_exists($1);"
@@ -41,6 +59,9 @@ const (
 	deleteUploadTokenForSession = "select * from delete_upload_token_for_session($1);"
 )
 
+/*
+GetFileListFromPath - возвращает список файлов в каталоге
+*/
 func GetFileListFromPath(database *sql.DB, path string) ([]FileInfo, error) {
 	rows, err := database.Query(getFolderContent, path)
 
@@ -60,30 +81,43 @@ func GetFileListFromPath(database *sql.DB, path string) ([]FileInfo, error) {
 	return result, nil
 }
 
+/*
+CreateFile - отправляет запрос на создание файла в БД
+*/
 func CreateFile(database *sql.DB, path string, fileInfo FileInfo) error {
+	// Проверка существования папки
 	err := checkFolderExists(database, path)
 	if err != nil {
 		return err
 	}
 
+	// Выполняем запрос
 	_, err = database.Exec(createFileInFolder, path, fileInfo.Name, fileInfo.IsFolder)
 
+	// Возвращаем результат
 	return err
 }
 
+/*
+ModifyFile - изменяет имя файла
+*/
 func ModifyFile(database *sql.DB, path string, oldFileInfo FileInfo, newFileInfo FileInfo) error {
-
+	// Проверяем наличие файла
 	err := checkFileExists(database, path, oldFileInfo.Name)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Test")
+	// Выполняем запрос
 	_, err = database.Exec(renameFileInFolder, path, oldFileInfo.Name, newFileInfo.Name)
 
+	// Возвращаем результат
 	return err
 }
 
+/*
+RemoveFile - удаляет файл
+*/
 func RemoveFile(database *sql.DB, path string, fileInfo FileInfo) error {
 	err := checkFileExists(database, path, fileInfo.Name)
 	if err != nil {
@@ -95,17 +129,24 @@ func RemoveFile(database *sql.DB, path string, fileInfo FileInfo) error {
 	return nil
 }
 
+/*
+checkFolderExists - проверяет существование папки
+*/
 func checkFolderExists(database *sql.DB, path string) error {
+	// Выполняется запрос
 	rows, err := database.Query(testFolderExists, path)
 	if err != nil {
 		return err
 	}
 
+	// подготавливаем функцию закрытия
 	defer rows.Close()
 	var exists bool
+	// Читаем результат
 	rows.Next()
 	rows.Scan(&exists)
 
+	// Если результата нет - ошибка
 	if !exists {
 		return FolderNotExistsError{
 			"Folder " + path + " not exists!",
@@ -115,17 +156,24 @@ func checkFolderExists(database *sql.DB, path string) error {
 	return nil
 }
 
+/*
+checkFileExists - проверяет существование файла
+*/
 func checkFileExists(database *sql.DB, path string, fileName string) error {
+	// Выполняется запрос
 	rows, err := database.Query(testFileExists, path, fileName)
 	if err != nil {
 		return err
 	}
 
+	// подготавливаем функцию закрытия
 	defer rows.Close()
 	var exists bool
+	// Читаем результат
 	rows.Next()
 	rows.Scan(&exists)
 
+	// Если результата нет - ошибка
 	if !exists {
 		return FolderNotExistsError{
 			"File " + path + "/" + fileName + " not exists!",
@@ -135,14 +183,20 @@ func checkFileExists(database *sql.DB, path string, fileName string) error {
 	return nil
 }
 
+/*
+CreateNewUploadToken - запрос на создание загрузочного токена
+*/
 func CreateNewUploadToken(database *sql.DB, token, path, fileName string) (string, error) {
+	// Выполняем запрос
 	rows, err := database.Query(createUploadTokenForSession, token, path, fileName)
 	if err != nil {
 		return "", err
 	}
 
+	// Подготавливаем функцию закрытия
 	defer rows.Close()
 
+	//Читаем и возвращаем токен
 	uploadToken := ""
 
 	rows.Next()
@@ -151,14 +205,20 @@ func CreateNewUploadToken(database *sql.DB, token, path, fileName string) (strin
 	return uploadToken, nil
 }
 
+/*
+DataByUploadToken - получаем информацию о загружаемых данных по токену
+*/
 func DataByUploadToken(database *sql.DB, token string) (string, string, string, error) {
+	// Выполняем запрос
 	rows, err := database.Query(dataForUploadToken, token)
 	if err != nil {
 		return "", "", "", err
 	}
 
+	// Подготавливаем функцию закрытия
 	defer rows.Close()
 
+	// Читаем информацию и возвращаем её
 	userToken := ""
 	filePath := ""
 	fileName := ""
@@ -169,7 +229,11 @@ func DataByUploadToken(database *sql.DB, token string) (string, string, string, 
 	return userToken, filePath, fileName, nil
 }
 
+/*
+DeleteUploadToken - запрос на удаление загрузочного токена
+*/
 func DeleteUploadToken(database *sql.DB, token string) error {
+	// Выполняем запрос и возвращаем результат
 	_, err := database.Exec(deleteUploadTokenForSession, token)
 	return err
 }
