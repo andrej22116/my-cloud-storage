@@ -4,13 +4,9 @@ var LOGOUT_COMPONENT = {
             <button @click="onLogout">Logout</button>
         </div>
     `,
-    data: () => {
-        return {
-            login: "",
-            password: "",
-        }
-    },
+
     methods: {
+        // Если есть инфа о токене - пробуем его уничтожить
         onLogout: function () {
             axios
                 .post('http://' + SERVER_ADDRES + '/logout', {

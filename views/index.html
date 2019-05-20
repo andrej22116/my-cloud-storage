@@ -51,7 +51,7 @@
                 </template>
                 <template v-slot:body>
                     <login v-if="login" @login-success="onLoginSuccess" @close-modal="closeModal"></login>
-                    <registration v-if="!login" v-slot:body> @close-modal="closeModal"</registration>
+                    <registration v-if="!login" v-slot:body @close-modal="closeModal"></registration>
                 </template>
             </modal>
         </div>

@@ -62,6 +62,26 @@
   background-color: lightcoral;
   font-weight: bold;
 }
+
+
+.dialog-error {
+  font-weight: 900;
+  text-align: center;
+
+  color: white;
+  background-color: darkred;
+  border-radius: 0.2em; 
+
+  margin: 0.7em;
+  padding: 0.3em;
+}
+
+.dialog-ok {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
   /*
   .modal-enter .modal-container,
   .modal-leave-active .modal-container {

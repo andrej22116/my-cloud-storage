@@ -109,14 +109,6 @@ func ModifyFileHandler(w http.ResponseWriter, r *http.Request) {
 	// И каким он будет для сервера
 	fullPath := filesystem.RootPath + databasePath
 
-	// Переименовываем физический файл
-	err = filesystem.Rename(fullPath, userArgs.OldName, userArgs.NewName)
-	if err != nil {
-		fmt.Println(err)
-		makeErrorHeader(w, http.StatusBadRequest)
-		return
-	}
-
 	// Делаем запрос на изменение имени
 	err = database.ModifyFile(gDatabase, databasePath,
 		database.FileInfo{
@@ -126,6 +118,14 @@ func ModifyFileHandler(w http.ResponseWriter, r *http.Request) {
 			Name: userArgs.NewName,
 		})
 
+	if err != nil {
+		fmt.Println(err)
+		makeErrorHeader(w, http.StatusBadRequest)
+		return
+	}
+
+	// Переименовываем физический файл
+	err = filesystem.Rename(fullPath, userArgs.OldName, userArgs.NewName)
 	if err != nil {
 		fmt.Println(err)
 		makeErrorHeader(w, http.StatusBadRequest)

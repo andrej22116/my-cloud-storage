@@ -180,6 +180,35 @@ after insert on files for each row
 execute procedure onAddFile_function();
 
 
+create or replace function onRenameFile_function()
+returns trigger as 
+$body$
+	declare 
+		parent_folder text;
+	
+	begin
+		if old.is_folder then
+			select 	folders.folder 
+			into 	parent_folder 
+			from 	folders 
+			where 	id_uuid = old.id_folder
+			group by folders.folder;
+		
+			update  folders
+			set 	folder = parent_folder || '/' || new.name
+			where 	folder = parent_folder || '/' || old.name;
+		end if;
+
+		return new;
+	end
+$body$
+language plpgsql;
+
+create trigger onRenameFile_trigger
+before update on files for each row
+execute procedure onRenameFile_function();
+
+
 create or replace function onDeleteFile_function()
 returns trigger as 
 $body$
@@ -417,5 +446,17 @@ returns void
 as $body$
 	delete 	from 	upload_keys
 			where 	upload_keys.upload_key = upload_token;
+$body$
+language sql;
+
+
+create or replace function rename_file_in_folder( in target_folder varchar(32767)
+                                                , in target_file_old_name varchar(240)
+                                                , in target_file_new_name varchar(240))
+returns void
+as $body$
+	update  files
+	set		name = target_file_new_name
+	where 	name = target_file_old_name;
 $body$
 language sql;

@@ -1,6 +1,6 @@
 .folder-item {
     margin: 1em;
-    padding-top: 128px;
+    padding-top: 112px;
 
     font-size: 12px;
 
@@ -13,6 +13,14 @@
 
     border-radius: 0.1em;
     transition: 0.3s;
+}
+
+.folder-item .options {
+    filter: opacity(0);
+}
+
+.folder-item:hover .options {
+    filter: opacity(100%);
 }
 
 .folder-item:hover {
@@ -48,4 +56,10 @@
     height: 1.5em;
     padding: 0.1em;
     margin: 0.1em;
+}
+
+.file-name {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
 }

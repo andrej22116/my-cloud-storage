@@ -34,6 +34,7 @@ const (
 	testFolderExists            = "select * from test_folder_exists($1);"
 	testFileExists              = "select * from test_file_exists($1, $2);"
 	createFileInFolder          = "select * from create_file_in_folder($1, $2, $3);"
+	renameFileInFolder          = "select * from rename_file_in_folder($1, $2, $3);"
 	deleteFileInFolder          = "select * from delete_file_in_folder($1, $2);"
 	createUploadTokenForSession = "select * from create_upload_token_for_session($1, $2, $3);"
 	dataForUploadToken          = "select * from data_for_upload_token($1);"
@@ -72,12 +73,15 @@ func CreateFile(database *sql.DB, path string, fileInfo FileInfo) error {
 
 func ModifyFile(database *sql.DB, path string, oldFileInfo FileInfo, newFileInfo FileInfo) error {
 
-	/*
-		_, err = database.Exec(create_file_in_folder, path, fileInfo.Name, fileInfo.IsFolder)
+	err := checkFileExists(database, path, oldFileInfo.Name)
+	if err != nil {
+		return err
+	}
 
-		return err*/
+	fmt.Println("Test")
+	_, err = database.Exec(renameFileInFolder, path, oldFileInfo.Name, newFileInfo.Name)
 
-	return nil
+	return err
 }
 
 func RemoveFile(database *sql.DB, path string, fileInfo FileInfo) error {

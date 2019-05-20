@@ -3,6 +3,7 @@ var ADD_COMPONENT = {
         'upload': UPLOAD_COMPONENT,
     },
 
+    // Шаблон с разметкой
     template: `
         <div class="add-container" 
         @mouseover="hover = true"
@@ -26,6 +27,7 @@ var ADD_COMPONENT = {
         </div>
     `,
 
+    // Переменные состояния объекта
     data: function () {
         return {
             hover: false,
@@ -34,10 +36,10 @@ var ADD_COMPONENT = {
         }
     },
 
+    // Методы
     methods: {
         mouseLeave() {
-            this.hover = false;
-            //this.state = 'base';
+            //this.hover = false;
         },
 
         onCreateNewFolder() {

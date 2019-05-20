@@ -1,6 +1,8 @@
 package filesystem
 
-import "os"
+import (
+	"os"
+)
 
 func Rename(path, oldName, newName string) error {
 	return os.Rename(path+"/"+oldName, path+"/"+newName)
