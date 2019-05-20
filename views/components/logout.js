@@ -16,7 +16,7 @@ var LOGOUT_COMPONENT = {
                 .post('http://' + SERVER_ADDRES + '/logout', {
                     token: window.localStorage["token"], 
                 })
-                .then(response => { alert("Ok") })
+                .then(response => this.$emit('user-logout'))
                 .catch(error => console.log(error));
         }
     }

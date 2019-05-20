@@ -2,8 +2,9 @@ var REGISTRATION_COMPONENT = {
     template: `
         <div>
             <input v-model="login" placeholder="Enter Your login">
-            <input v-model="password" placeholder="Enter Your password">
-            <input v-model="repeatPassword" placeholder="Repeat password">
+            <input v-model="password" placeholder="Enter Your password" type="password">
+            <input v-model="repeatPassword" placeholder="Repeat password" type="password">
+            <p class="dialog-error" v-if="error">Invalid login or password!</p>
             <button @click="onRegistration">Registration!</button>
         </div>
     `,
@@ -26,8 +27,13 @@ var REGISTRATION_COMPONENT = {
                     login: this.login,
                     password: this.password,
                 })
-                .then(response => { alert("Cool! :D") })
-                .catch(error => console.log(error));
+                .then( () => {
+                    this.$emit("close-modal");
+                })
+                .catch(error => {
+                    this.error = true;
+                    console.log(error)
+                });
         }
     }
 }

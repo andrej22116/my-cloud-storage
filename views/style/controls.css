@@ -1,0 +1,24 @@
+button {
+    padding: 0.25em 2em;
+    margin: 1em;
+
+    /*border: 2px solid white;*/
+    border: 0 solid black;
+    border-radius: 0.1em;
+
+    color: white;
+    background-color: #0004;
+
+    transition: 0.25s;
+
+    box-shadow: 0 4px 8px 0 #0003;
+}
+
+button:hover {
+    background-color: #AAA8;
+}
+
+button:active {
+    background-color: white;
+    color: black;
+}

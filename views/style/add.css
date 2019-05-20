@@ -1,0 +1,32 @@
+.add-container, .add-content, .add-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-container {
+    min-width: 128px;
+    
+    border-radius: 0.1em;
+    box-shadow: 0px 6px 6px 0px #0002;
+
+    margin: 1em;
+}
+
+.add-content {
+    position: relative;
+
+    background-color: #FFFD;
+
+    z-index: 100;
+}
+
+.add-background {
+
+    color: #40d16e;
+    font-size: 64px;
+    font-weight: 900;
+
+    z-index: 0;
+}

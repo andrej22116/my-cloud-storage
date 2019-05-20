@@ -10,6 +10,19 @@
     background-position: top;
     background-repeat: no-repeat;
     background-size: contain;
+
+    border-radius: 0.1em;
+    transition: 0.3s;
+}
+
+.folder-item:hover {
+    filter: grayscale(85%);
+    transition: 0.3s;
+}
+
+.folder-item:active{
+    filter: hue-rotate(90deg);
+    transition: 0.3s;
 }
 
 .file {
@@ -21,7 +34,18 @@
 }
 
 .options {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
     position: relative;
-    top: -128px - 2em;
-    left: 0;
+    top: -128px;
+}
+
+.folder-item button {
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0.1em;
+    margin: 0.1em;
 }

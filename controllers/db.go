@@ -8,9 +8,9 @@ import (
 
 var gDatabase *sql.DB
 
-func OpenDatabaseConnection() error {
+func OpenDatabaseConnection(host, port, dbname, user, password string) error {
 	var config database.Config
-	config.ConnectionString = "host=localhost port=5432 user=postgres password=1 dbname=cloud_storage sslmode=disable"
+	config.ConnectionString = "host=" + host + " port=" + port + " user=" + user + " password=" + password + " dbname=" + dbname + " sslmode=disable"
 	db, err := database.NewDatabase(&config)
 	gDatabase = db
 

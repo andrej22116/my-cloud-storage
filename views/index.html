@@ -5,26 +5,55 @@
 
         <meta charset="utf-8">
 
+        <link rel="stylesheet" type="text/css" href="style/controls.css">
         <link rel="stylesheet" type="text/css" href="style/index.css">
         <link rel="stylesheet" type="text/css" href="style/filesystem.css">
         <link rel="stylesheet" type="text/css" href="style/fileItem.css">
         <link rel="stylesheet" type="text/css" href="style/folder.css">
         <link rel="stylesheet" type="text/css" href="style/file.css">
+        <link rel="stylesheet" type="text/css" href="style/modal.css">
+        <link rel="stylesheet" type="text/css" href="style/upload.css">
+        <link rel="stylesheet" type="text/css" href="style/add.css">
+
     </head>
     <body>
-        <div id="content" class="content">
-            <div class="header">
-                <div id="options" class="menu">menu</div>
-                <div id="user_block" class="user">
-                    {{user_nick}}
+        <div id="application" class="application">
+            <div :class="[{'background_blur': modal}]">
+                <div class="header">
+                    <div class="chest"></div>
+                    <div class="fullpath" v-if="$store.getters.USER_AUTHORIZED">
+                        <div class="user">{{user_nick}}</div>
+                        <div class="path">{{currentPath}}</div>
+                    </div>
+                    <div>
+                        <button v-if="!$store.getters.USER_AUTHORIZED" @click="showLoginDialog">Log In</button>
+                        <button v-if="!$store.getters.USER_AUTHORIZED" @click="showRegistrationDialog">Sign Up</button>
+                        <logout v-if="$store.getters.USER_AUTHORIZED" @user-logout="onLogout"></logout>
+                    </div>
+                </div>            
+
+                <filesystem v-if="$store.getters.USER_AUTHORIZED" :path="parentPathProperty"></filesystem>
+                <div v-if="!$store.getters.USER_AUTHORIZED" class="hello-container">
+                    <div class="hello-title">Welcom to this cloud storage!</div>
+                    <div class="hello-info">
+                        This cloud storage - my finaly project at university.<br>
+                        If you want use this, please, create new account and log in<br>
+                        or log in with Your created login and password!
+                    </div>
+                    <div class="hello-small-font">Kulick Hanna --- Polotsk --- 2019</div>
                 </div>
             </div>
 
-            <login></login><logout></logout>
-
-            <registration></registration>
-
-            <filesystem></filesystem>
+            <modal v-if="modal" @close-modal="closeModal">
+                <template v-slot:title>
+                    <h2 v-if="login">Log In form</h2>
+                    <h2 v-if="!login">Sign Up form</h2>
+                </template>
+                <template v-slot:body>
+                    <login v-if="login" @login-success="onLoginSuccess" @close-modal="closeModal"></login>
+                    <registration v-if="!login" v-slot:body> @close-modal="closeModal"</registration>
+                </template>
+            </modal>
         </div>
 
     </body>
@@ -34,15 +63,18 @@
 
     <!-- DEVELOP VERSION -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
     <!-- RELEASE VERSION -->
     <!--<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+    <script src="https://unpkg.com/vuex@2.0.0"></script>
 
+    <script src="store.js"></script>
+    <script src="components/modal.js"></script>
     <script src="components/file.js"></script>
     <script src="components/login.js"></script>
     <script src="components/logout.js"></script>
     <script src="components/registration.js"></script>
     <script src="components/uploadfile.js"></script>
+    <script src="components/add.js"></script>
     <script src="components/filesystem.js"></script>
     <script src="application.js"></script>
 </html>

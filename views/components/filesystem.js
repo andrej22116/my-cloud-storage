@@ -1,17 +1,15 @@
 var FILESYSTEM_COMPONENT = {
-    props: ['filesystem'],
     components: {
         'file': FILE_COMPONENT,
-        'upload': UPLOAD_COMPONENT,
+        'add': ADD_COMPONENT,
     },
     template: `
         <div class="filesystem">
-            <div class="path">{{path}}</div>
-            <button @click="update">Get files</button>
-            <input v-model="newFolderName">
-            <button @click="onCreateNewFolder">CreateFolder</button>
-            <button @click="onGoParentFolder">back</button>
+            <button @click="update">update</button>
+            <button @click="onGoParentFolder" v-if="!needHideBackButtonTest">Back</button>
             <div class="filelist">
+                {{userAuthorizedTest}}
+                <add @create-folder="onCreateNewFolder" @update="update"></add>
                 <file
                     @on_next_folder="nextFolder"
                     @on_download_file="downloadFile"
@@ -23,20 +21,17 @@ var FILESYSTEM_COMPONENT = {
                     >
                 </file>
             </div>
-            <upload :upload-path="path"></upload>
         </div>
     `,
     data: function() {
         return {
-            path: "",
             newFolderName: "",
             filesList: [],
         }
     },
     methods: {
         nextFolder: function( folder ) {
-            console.log("Next folder: " + folder);
-            this.path += "/" + folder;
+            this.$store.commit("NEXT_PATH", folder);
             this.update();
         },
 
@@ -44,32 +39,27 @@ var FILESYSTEM_COMPONENT = {
             axios
                 .post('http://' + SERVER_ADDRES + '/load', {
                     token: window.localStorage["token"],
-                    path: this.path,
+                    path: this.$store.getters.PATH,
                     name: file,
                 })
                 .then( response => {
                     window.open('http://' + SERVER_ADDRES + '/load/' + response.data.loadToken);
                 })
-                .catch(function(){
-                    console.log('FAILURE!!');
-                });
+                .catch( error => alert(error) );
         },
 
         deleteFile: function( fileItem ) {
             axios
                 .post('http://' + SERVER_ADDRES + '/remove', {
                     token: window.localStorage["token"],
-                    path: this.path,
+                    path: this.$store.getters.PATH,
                     name: fileItem.file.name,
                 })
                 .then( () => {
                     this.filesList.splice(fileItem.id, 1);
-                    console.log('SUCCESS!!')
+                    this.update();
                 })
-                .catch( error => {
-                    console.log('FAILURE!!');
-                    console.log(error);
-                });
+                .catch( error => alert(error) );
         },
 
         update: function() {
@@ -77,30 +67,42 @@ var FILESYSTEM_COMPONENT = {
             axios
                 .post('http://' + SERVER_ADDRES + '/files', {
                     token: window.localStorage["token"],
-                    path: this.path,
+                    path: this.$store.getters.PATH,
                 })
                 .then(response => {
                     this.filesList = response.data 
                 })
-                .catch(error => console.log(error));
+                .catch( error => alert(error) );
         },
 
-        onCreateNewFolder: function() {
+        onCreateNewFolder: function(name) {
             axios
                 .post('http://' + SERVER_ADDRES + '/add/folder', {
                     token: window.localStorage["token"],
-                    path: this.path,
-                    name: this.newFolderName
+                    path: this.$store.getters.PATH,
+                    name: name
                 })
-                .then(() => console.log('SUCCESS!!'))
-                .catch(error => console.log(error));
+                .then( () => this.update() )
+                .catch( error => alert(error) );
         },
 
         onGoParentFolder: function() {
-            var pathSplit = this.path.split("/");
-            this.path = pathSplit.slice(0, pathSplit.length - 1).join("/");
+            this.$store.commit("PREV_PATH");
             this.update();
         },
-    }
+    },
+
+    computed: {
+        userAuthorizedTest() {
+            if ( this.$store.getters.USER_AUTHORIZED ) {
+                this.update();
+            }
+            return;
+        },
+
+        needHideBackButtonTest() {
+            return this.$store.getters.PATH == '';
+        }
+    },
 };
 

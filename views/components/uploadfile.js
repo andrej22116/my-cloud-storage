@@ -1,29 +1,35 @@
 var UPLOAD_COMPONENT = {
-    props: ["uploadPath"],
     template: `
-        <div>
-            <input type="file" id="file" ref="file" @change="change"/>
-            <button @click="upload">upload</button>
+        <div class="upload-file">
+            <input type="file" id="file" ref="file" @change="change" hidden/>
+            <button @click="select">{{name}}</button>
+            <button @click="upload">Upload</button>
         </div>
     `,
     data: () => {
         return {
             file: '',
+            name: 'Select'
         }
     },
     methods: {
-        change: function () {
+        change() {
             this.file = this.$refs.file.files[0];
+            this.name = this.file.name
         },
 
-        upload: function () {
+        select() {
+            document.getElementById("file").click()
+        },
+
+        upload() {
             var formData = new FormData();
             formData.append('file', this.file);
 
             axios
                 .post('http://' + SERVER_ADDRES + '/upload', {
                     token: window.localStorage["token"],
-                    path: this.uploadPath,
+                    path: this.$store.getters.PATH,
                     name: 'lol',
                 })
                 .then( response => {
@@ -33,15 +39,16 @@ var UPLOAD_COMPONENT = {
                                 'Content-Type': 'multipart/form-data'
                             }
                         })
-                        .then(function(){
-                            console.log('SUCCESS!!');
+                        .then(() => {
+                            this.$emit('file-uploaded');
                         })
-                        .catch(function(){
-                            console.log('FAILURE!!');
+                        .catch(() => {
+                            alert('FAILURE 2!!');
+                            this.$emit('file-uploaded');
                         })
                 })
                 .catch(function(){
-                    console.log('FAILURE!!');
+                    alert('FAILURE 1!!');
                 });
         },
     }

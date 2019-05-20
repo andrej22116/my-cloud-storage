@@ -8,14 +8,6 @@
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
-    align-items: baseline;
-}
-
-.path, .path:before {
-    font-size: 18px;
-}
-
-.path:before {
-    content: '#> ';
-    font-weight: bold;
+    align-items: stretch;
+    align-content: center;
 }

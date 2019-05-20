@@ -2,16 +2,15 @@ var FILE_COMPONENT = {
     props: ['file', 'id'],
     template: `
         <div @dblclick="onDblClick" v-bind:class="[ file.isFolder ? 'folder' : 'file', 'folder-item' ]">
-            <div class="icon"></div>
+            <div class="options">
+                <button @click="onBeginEdit" class="reneame">e</button>
+                <button @click="onDelete" class="delete">x</button>
+            </div>
             <div class="name">
                 <div>{{ file.name }}</div>
                 <!--<input v-model="message">-->
             </div>
             <div class="date">{{ file.date }}</div>
-            <div class="options">
-                <button @click="onBeginEdit" class="reneame">e</button>
-                <button @click="onDelete" class="delete">x</button>
-            </div>
         </div>
     `,
     data: function () {

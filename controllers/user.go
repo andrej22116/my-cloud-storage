@@ -28,7 +28,7 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 func AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 	user := database.UserArguments{}
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := jsonFromBody(r, &user)
 	if err != nil {
 		makeErrorHeader(w, http.StatusBadRequest)
 		w.Header().Add("Error", err.Error())
@@ -36,6 +36,23 @@ func AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userData, err := database.Authorization(gDatabase, user)
+	if err != nil {
+		makeErrorHeader(w, http.StatusBadRequest)
+	} else {
+		makeJsonHeader(w, "POST", userData)
+	}
+}
+
+func TestTokenHandler(w http.ResponseWriter, r *http.Request) {
+	token := database.Token{}
+	err := jsonFromBody(r, &token)
+	if err != nil {
+		makeErrorHeader(w, http.StatusBadRequest)
+		w.Header().Add("Error", err.Error())
+		return
+	}
+
+	userData, err := checkAccess(token.Token)
 	if err != nil {
 		makeErrorHeader(w, http.StatusBadRequest)
 	} else {

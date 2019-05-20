@@ -1,4 +1,86 @@
 * {
     margin: 0;
     padding: 0;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.chest {
+    margin: 0.1em;
+    background-image: url(./img/chest.png);
+    width: 3em;
+   
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    filter: drop-shadow(0px 1px 4px gold)
+}
+
+.header {
+    width: 100%;
+    background-color: #40d16e;
+    color: white;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+
+    box-shadow: 0 0.1em 0.5em 0.1em #0005;
+
+    z-index: 9999;
+}
+
+.user, .path {
+    font-size: 24px;
+}
+.user {
+    color: #288545;
+    margin-right: 0.2em;
+}
+.path {
+    color: white;
+}
+
+.background_blur {
+    background-color: transparent;
+    filter: blur(2px); 
+    transition: 1s;
+}
+
+.fullpath {
+    display: flex;
+    align-items: center;
+
+    padding-left: 1em;
+}
+
+.hello-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 5em;
+}
+
+.hello-title {
+    color: #42b983;
+    font-size: 48px;
+    font-weight: 900;
+
+    margin: 1em 2em;
+}
+
+.hello-info {
+    font-size: 25px;
+
+    margin: 1em 2em;
+}
+
+.hello-small-font {
+    font-size: 12px;
+    color: gray;
+
+    margin: 1em 2em;
 }

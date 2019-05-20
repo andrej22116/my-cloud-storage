@@ -13,10 +13,12 @@ insert into permission_levels(lvl, name) values ( 0, 'user')
 -- users
 drop table if exists users cascade; 
 create table users (
-	nickname varchar(128) primary key,
-	password varchar(256) not null,
+	nickname varchar(128) primary key check(length(nickname) > 0),
+	password varchar(256) not null check(length(password) > 0),
 	status smallint not null references permission_levels default (0)
 );
+alter table users add constraint nickname_len check(length(nickname) > 0);
+alter table users add constraint password_len check(length(password) > 0);
 
 
 -- users sessions
@@ -417,5 +419,3 @@ as $body$
 			where 	upload_keys.upload_key = upload_token;
 $body$
 language sql;
-
-select from delete_upload_token_for_session('\xd7168df5be9cd3084954720bdfe8265bb0828ab9453622fc97021368813e5387')
